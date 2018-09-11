@@ -1,0 +1,89 @@
+.Body {
+    font-family: sans-serif;  
+    text-align: center;
+    margin-top: 20px;
+    width: 100%;
+    position: relative;
+  }
+
+.Search-box, .bus {
+    position: relative;
+    width: 80%;
+    text-align: left;
+    margin: 0 auto;
+    padding: 50px;
+    /* border-radius: 5px; */
+    margin-bottom: 20px;
+    
+}
+
+.Search-box {
+  background-color: rgb(45, 103, 178);
+  color: aliceblue;
+  font-weight: bold;
+  font-size: 110%;
+  padding-top: 20px;
+}
+
+.booking-option {
+  display: flex;
+  justify-content: space-around;
+}
+
+.booking-option span {
+  margin-right: 20px;
+}
+
+.date {
+  display: flex;
+}
+
+.custom-select {
+  position: relative;
+  font-family: Arial;
+  /* background-color: dodgerblue; */
+  font-size: 1.2em;
+  border: none;
+  border-radius: 5px;
+
+}
+.custom-select select {
+  display: none;
+}
+
+.Search-box {
+  position: relative;
+}
+
+.Search-box input {
+  font-size: 1.2em;
+}
+
+.btn-book {
+  position: absolute;
+  top: 84%;
+  background-color: #f37638;
+
+  /* border-radius: 5px; */
+  padding: 10px;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer
+}
+
+@media (max-width: 1390px) {
+  .btn-book{
+    top: 84%;
+  }
+}
+
+.btn-book:hover {
+  background-color: #f38d59;
+}
+
+
+.filter {
+  width: 100%;
+  background: #EFEFEFEF;
+  height: 2em;
+}
