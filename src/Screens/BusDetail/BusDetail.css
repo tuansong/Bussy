@@ -154,13 +154,15 @@
 
 .extra-block .review .review-header {
     display: flex;
+    background: #888888
 }
 
 .extra-block .review .review-header img {
+    margin-top: 5px;
     width: 40px;
     height: 40px;
     margin-left: 10px;
-    margin-right: 20px;
+    margin-right: 10px;
 }
 
 .extra-block .review .review-content {
@@ -180,4 +182,23 @@
 
 .button-book:hover {
     background-color: #f38d59;
+}
+
+.disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.8;
+}
+
+.booking-introduction {
+    color: whitesmoke;
+    position: absolute;
+    padding: 10px;
+    bottom: 0px;
+}
+
+.rev {
+    padding: 5px;
+    background: whitesmoke;
+    border-bottom: 1px solid gray
 }

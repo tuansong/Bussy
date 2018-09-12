@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import createStore from "./Store";
 import { Provider } from "react-redux";
-import { Link, Route, Switch, Redirect } from 'react-router-dom';
 import LoginScreen from "./Screens/Login/Login";
-import Search from '../src/Screens/Search/Search';
 
 import { BrowserRouter } from 'react-router-dom'
 

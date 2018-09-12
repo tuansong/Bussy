@@ -1,0 +1,23 @@
+.checkout {
+    position: absolute;
+    z-index: 9999;
+    width: 500px;
+    margin: 0 auto;
+    top: 4%;
+    left: 37%;
+    background: whitesmoke;
+}
+
+.checkout button {
+    border: none;
+    font-size: 1.3em;
+    background: #f38d59;
+    margin: 5px;
+    cursor: pointer;
+}
+
+@media (max-width: 1390px) {
+    .checkout {
+        left: 31%;
+    }    
+}

@@ -1,85 +1,63 @@
 import React, { Component } from 'react';
 import './BusDetail.css';
+import { connect } from "react-redux";
 
+import { callStripe } from '../../HOC/StripeApi';
+import Checkout from '../Checkout/Checkout';
 import bookedSeat from '../../assets/grey-seat.svg';
 import blankSeat from '../../assets/white-seat.svg';
+import selectedSeat from '../../assets/green-seat.svg'
 import user from '../../assets/Anonymous-Avatar.png';
+
+const publicKey = `pk_test_EkIBvnp1PdCW9B6WWgPJePMF`;
+const secretKey = `sk_test_VGHOeXpBmLss7oNI0d73H5iK`;
+
+const StripeCheckout = callStripe(Checkout, publicKey, secretKey);
 
 class BusDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
             expanded: false,
-            busSeat: [
-                {
-                    id: 1,
-                    scr: bookedSeat,
-                },
-                {
-                    id: 2,
-                    scr: blankSeat,
-                },
-                {
-                    id: 3,
-                    scr: bookedSeat,
-                },
-                {
-                    id: 4,
-                    scr: blankSeat,
-                },
-                {
-                    id: 5,
-                    scr: blankSeat,
-                },
-                {
-                    id: 6,
-                    scr: blankSeat,
-                },
-                {
-                    id: 7,
-                    scr: blankSeat,
-                }
-            ],
+            openModal: false
         }
     }
 
     bookSeatHandler = (i) => {
-        let newBusSeat = this.state.busSeat;
-        let newBusSeatStatus = !this.state.busSeat[i].booked;
-        newBusSeat[i].booked = newBusSeatStatus;
-        this.setState({
-            busSeat: newBusSeat
-        });
+        
     }
 
+
     render() {
-        console.log(this.state.busSeat[0].booked);
+        const busInfo = this.props.busInfo;
         let extraInfo = this.state.expanded ? (
             <div>
                 <div className="extra-block">
                     <div className="bus-map">
+                        <p className="booking-introduction">Please select an available seat</p>
                         <ul>
-                            {this.state.busSeat.map((m, i) =>
-                                // <i key={m.id}
-                                //     className={m.booked ? "fas fa-map" : "far fa-map"}
-                                //     style={{ fontSize: 50 }}
-                                //     onClick={() => this.bookSeatHandler(i)}
-                                // >
-                                // </i>
-                                <img src={m.scr} alt="seat" className="seat" />
+                            {this.props.busSeat.map((seat, i) =>
+                                <a key={i} className={seat === 1 ? 'disabled' : ''} onClick={ () => this.bookSeatHandler(i) }>                                    
+                                    <img src={ seat === 2 ? selectedSeat : (seat === 1 ? bookedSeat : blankSeat)} alt="seat" className="seat" />
+                                </a>
                             )}
                         </ul>
                     </div>
                     <div className="review">
+                        {busInfo[0].data.map((review, i) => {
+                            return(
+                            <div key={i} className="rev">
+                                <div className="review-header">
+                                    <img src={user} alt="avatar" />
+                                    <p>{review.user_name}</p>
+                                </div>
+                                <p className="review-content">{review.text}</p>
+                            </div>)
+                        })}
 
-                        <div className="review-header">
-                            <img src={user} alt="avatar" />
-                            <p>Name</p>
-                        </div>
-                        <p className="review-content">It's so good, nice service. 5 star for this</p>
                     </div>
                 </div>
-                <button className="button-book">Book now</button>
+                <button className="button-book" onClick={() => this.setState({openModal: !this.state.openModal})}>Book now</button>
             </div>
         )
             :
@@ -106,19 +84,20 @@ class BusDetail extends Component {
                         <div className="info-right">
                             <div>
                                 <i class="fas fa-map-marker-alt" style={{ fontSize: 50, color: '#DD2C00' }}></i>
-                                <p>23:00</p>
-                                <p>{this.props.dest}</p>
+                                <p>{this.props.arvTime}</p>
+                                <p>{this.props.arv}</p>
                             </div>
                             <hr />
                             <div>
                                 <i class="fas fa-map-marker-alt" style={{ fontSize: 50, color: '#DD2C00' }}></i>
-                                <p>5:00</p>
-                                <p>{this.props.arv}</p>
+                                <p>{this.props.destTime}</p>
+                                <p>{this.props.dest}</p>
                             </div>
                         </div>
                     </div>
                     {extraInfo}
                 </div>
+                {this.state.openModal ? <StripeCheckout lastestCharge={this.props.price}/> : null}
                 <i className="fas fa-plus-circle"
                     style={{ fontSize: 50 }}
                     onClick={() => this.setState({ expanded: !this.state.expanded })}>
@@ -127,4 +106,11 @@ class BusDetail extends Component {
         )
     }
 }
-export default BusDetail;
+
+function mapStateToProps(state) {
+    return {
+        busInfo: state.search.busInfo
+    }
+}
+
+export default connect(mapStateToProps)(BusDetail);

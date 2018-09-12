@@ -55,11 +55,25 @@ class Search extends Component {
     const busesData = [];
     //const promisesBus = [];
     routes.forEach(route => {
-        busesData.push(route.data());
+      busesData.push(route.data());
     });
-    console.log(busesData);
 
     this.props.dispatch({ type: "GET_BUSES", data: busesData });
+
+    // Get bus info
+
+    db.collection('bus').get()
+       .then(querySnapshot => {
+         let busInfo = [];
+         querySnapshot.forEach((doc) => {
+           if (doc.exists) {
+             busInfo.push({ data: doc.data().review })
+          }
+         });
+      this.props.dispatch({ type: "GET_BUS_INFO", data: busInfo });
+           
+      });
+
     //await this.setState({ loading: false });
   }
 
@@ -100,15 +114,30 @@ class Search extends Component {
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
   }
 
-  sortNameHandler = () => {
+  sortPriceHandler = () => {
     const buses = this.props.buses;
-    let newBuses = buses.sort((a, b) => a.routeData.Price - b.routeData.Price);
-    console.log(newBuses);
-    this.props.dispatch({ type: "SORT_PRICE_BUSES", data: newBuses });
+    let newBuses = buses.sort((a, b) => a.busData.price - b.busData.price);
+    this.props.dispatch({ type: "GET_BUSES", data: newBuses });
   }
 
-  sortPriceHandler = () => {
+  getArvTimeText(timestamp) {
+    const date = new Date(timestamp);
+    return date.getHours() + ':' + ("0" + date.getMinutes()).substr(-2);
+  }
 
+  getDestTimeText(timestamp, movingTime) {
+    let minute = movingTime % 60;
+    let hour = (movingTime - minute) / 60;
+    let time = minute + ':' + hour
+    const date = new Date(timestamp);
+    return date.getHours() + hour + ':' + ("0" + date.getMinutes() + minute).substr(-2);
+  }
+
+  getTravelTime(movingTime) {
+    let minute = movingTime % 60;
+    let hour = (movingTime - minute) / 60;
+    let time = hour + ' hours';
+    return time;
   }
 
   render() {
@@ -146,25 +175,37 @@ class Search extends Component {
         </button>
         </div>
         <div className="filter">
-          <input type="checkbox" onChange={this.sortNameHandler} />
-          <label>By name (A-Z)</label>
           <input type="checkbox" onChange={this.sortPriceHandler} />
           <label>By price</label>
         </div>
         {/* <Loader loaded={this.state.loading}> */}
-          {this.props.buses &&
-            this.props.buses.map((bus, index) =>
-              <BusDetail
-                key={index.toString()}
-                src={bus.busData.image}
-                name={bus.busData.name}
-                time='12h'
-                //time={moment.unix(bus.routeData.Date.seconds).format("hh:mm")}
-                price={this.number_format(bus.price, 0, ",", ".")}
-                dest={bus.from}
-                arv={bus.to}
-              />
-            )}
+        {this.props.buses &&
+          this.props.buses.map((bus, index) => {
+            const tikets = bus.ticket;
+            const listBooked = tikets.map(ticket => ticket.seat);
+            const listSeatBooked = [];
+            for (let i = 1; i < 8; i++) {
+              if (listBooked.indexOf(i) > -1) {
+                listSeatBooked.push(1);
+              } else listSeatBooked.push(0);
+            }
+            //console.log(listSeatBooked);
+            return <BusDetail
+              key={index.toString()}
+              src={bus.busData.image}
+              name={bus.busData.name}
+              //time={getTimeText(bus.date)}
+              busSeat={listSeatBooked}
+              time={this.getTravelTime(bus.expected_time)}
+              price={this.number_format(bus.price, 0, ",", ".")}
+              arv={bus.from}
+              arvTime={this.getArvTimeText(bus.date)}
+              dest={bus.to}
+              destTime={this.getDestTimeText(bus.date, bus.expected_time)}
+              busId={bus.busID}
+            />
+          }
+          )}
         {/* </Loader> */}
       </div>
     );
@@ -173,7 +214,7 @@ class Search extends Component {
 function mapStateToProps(state) {
   return {
     places: state.search.places,
-    buses: state.search.buses,
+    buses: state.search.buses
   }
 }
 export default connect(mapStateToProps)(Search);

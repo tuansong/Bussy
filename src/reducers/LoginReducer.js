@@ -10,6 +10,7 @@ export const LoginReducer = (state = initialState, action) => {
               loginStatus: action.data
           }
       default:
-          return state; break;
+          return state;
   }
+  return state;
 };
